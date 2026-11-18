@@ -74,33 +74,6 @@ a{ color:inherit; }
   pointer-events:none;
 }
 
-.term-card{
-  font-family:'IBM Plex Mono', monospace;
-  font-size:13px;
-  color:var(--slate);
-  border:1px solid var(--line);
-  background:rgba(241,237,228,0.03);
-  border-radius:6px;
-  padding:16px 20px;
-  min-width:300px;
-  margin-bottom:36px;
-  position:relative;
-  z-index:1;
-}
-.term-row{ display:flex; align-items:center; gap:10px; min-height:20px; display:none; }
-.term-row.show{ display:flex; }
-.cursor{
-  display:inline-block; width:7px; height:14px; background:var(--gold);
-  animation:blink 1s step-end infinite; margin-left:2px; vertical-align:-2px;
-}
-@keyframes blink{ 50%{ opacity:0; } }
-@keyframes pop{
-  0%{ transform:scale(0.6); opacity:0; }
-  60%{ transform:scale(1.15); opacity:1; }
-  100%{ transform:scale(1); opacity:1; }
-}
-.check-pop{ animation:pop .45s ease forwards; color:var(--teal); }
-
 @keyframes fadeUp{
   from{ opacity:0; transform:translateY(14px); }
   to{ opacity:1; transform:translateY(0); }
@@ -299,8 +272,6 @@ a{ color:inherit; }
 a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
 
 @media (prefers-reduced-motion: reduce){
-  .cursor{ animation:none; }
-  .check-pop{ animation:none; }
   .fade{ opacity:1 !important; animation:none !important; }
 }
 </style>
@@ -323,26 +294,11 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
 </nav>
 
 <header class="hero">
-  <div class="term-card">
-    <div class="term-row show" id="row1">
-      <span style="color:var(--slate)">&gt; initializing secure session</span>
-      <span class="cursor" id="cursor1"></span>
-    </div>
-    <div class="term-row" id="row2">
-      <span style="color:var(--slate)">&gt; verifying credentials</span>
-      <span class="cursor" id="cursor2"></span>
-    </div>
-    <div class="term-row" id="row3">
-      <svg class="icon check-pop" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m22 4-10 10-3-3"/></svg>
-      <span style="color:var(--teal)">IDENTITY VERIFIED — welcome</span>
-    </div>
-  </div>
-
-  <div class="fade" id="heroContent">
+  <div class="fade in" id="heroContent">
     <h1 class="name">Varsha Tanti</h1>
     <div class="role">SDE-2 · Fullstack Engineer, Verizon</div>
     <p class="summary">
-      Four-plus years building scalable, secure web experiences with React, Angular
+      <span class="exp-duration">4 years 4 months</span> building scalable, secure web experiences with React, Angular
       and TypeScript — shipping passwordless authentication, redesigning account
       security, and moving B2B customers onto digital self-service.
     </p>
@@ -365,7 +321,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
 
 <section class="section" id="experience">
   <div class="eyebrow">EXPERIENCE_LOG</div>
-  <h2 class="section-head">Three years, one product — driven end to end at Verizon.</h2>
+  <h2 class="section-head"><span class="exp-duration">4 years 4 months</span>, one product — driven end to end at Verizon.</h2>
 
   <div class="exp-card fade">
     <div class="exp-top">
@@ -542,37 +498,19 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function runHeroSequence(){
-  var row1 = document.getElementById('row1');
-  var row2 = document.getElementById('row2');
-  var row3 = document.getElementById('row3');
-  var cursor1 = document.getElementById('cursor1');
-  var heroContent = document.getElementById('heroContent');
-
-  if(prefersReduced){
-    row2.classList.add('show');
-    row3.classList.add('show');
-    heroContent.classList.add('in');
-    return;
-  }
-
-  setTimeout(function(){
-    cursor1.style.display = 'none';
-    row2.classList.add('show');
-  }, 500);
-
-  setTimeout(function(){
-    document.getElementById('cursor2').style.display = 'none';
-    row3.classList.add('show');
-  }, 1350);
-
-  setTimeout(function(){
-    heroContent.classList.add('in');
-  }, 2000);
-}
-runHeroSequence();
+/* Live experience calculation — joined Verizon July 2022 */
+(function(){
+  var start = new Date(2022, 6, 1); // July 2022 (month index 6)
+  var now = new Date();
+  var months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if(now.getDate() < start.getDate()) months -= 1;
+  if(months < 0) months = 0;
+  var y = Math.floor(months / 12), m = months % 12, parts = [];
+  if(y) parts.push(y + (y === 1 ? ' year' : ' years'));
+  if(m) parts.push(m + (m === 1 ? ' month' : ' months'));
+  var text = parts.join(' ') || 'Less than a month';
+  document.querySelectorAll('.exp-duration').forEach(function(el){ el.textContent = text; });
+})();
 
 /* Scroll reveal for fade elements below the hero */
 var revealTargets = document.querySelectorAll('.stat.fade, .exp-card.fade, .proj-card.fade, .skill-groups .fade, .edu-row.fade, .cert-row.fade');
